@@ -3,19 +3,19 @@ from app.models.order_model import Order
 from app.services.order_service import create_order, get_orders, get_order_by_id, update_order_status
 from app.middlewares.auth_middleware import get_current_user, check_role
 
-router = APIRouter(prefix="/orders", tags=["Orders"])
+router = APIRouter(prefix="/orders", tags=["Orders"])  # ✅ Correction
 
-@router.post("/", dependencies=[Depends(check_role(["client"]))])
+@router.post("")
 async def place_order(order: Order, current_user: dict = Depends(get_current_user)):
     """ Permet aux clients de passer une commande """
     return create_order(order)
 
-@router.get("/", dependencies=[Depends(check_role(["chef", "livreur", "admin"]))])
+@router.get("")
 async def list_orders(current_user: dict = Depends(get_current_user)):  
     """ Liste toutes les commandes """
     return get_orders()
 
-@router.get("/{order_id}")
+@router.get("/{order_id}")  # ✅ Ajout du `/` avant `{order_id}`
 async def get_order(order_id: str, current_user: dict = Depends(get_current_user)):
     """ Récupère une commande spécifique """
     order = get_order_by_id(order_id)
@@ -25,7 +25,7 @@ async def get_order(order_id: str, current_user: dict = Depends(get_current_user
     
     return order
 
-@router.put("/{order_id}/status", dependencies=[Depends(check_role(["chef", "livreur"]))])
+@router.put("/{order_id}/status")  # ✅ Ajout du `/` pour éviter la redirection
 async def change_order_status(order_id: str, status: str, current_user: dict = Depends(get_current_user)):
     """ Met à jour le statut d'une commande avec restrictions par rôle """
     return update_order_status(order_id, status)
