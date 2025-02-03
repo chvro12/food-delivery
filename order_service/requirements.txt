@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+pydantic[email]
+bcrypt
+python-dotenv
+python-jose[cryptography]

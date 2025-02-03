@@ -1,0 +1,28 @@
+{
+    "users": [
+        {
+            "username": "admin",
+            "email": "admin@example.com",
+            "password": "$2b$12$Rfxu20S9VuY7Z7IWvAGA6OpmifOFI5eM0TRerwdR6vdm8ps.aYV16",
+            "role": "admin"
+        },
+        {
+            "username": "testuser",
+            "email": "test@example.com",
+            "password": "$2b$12$yorh1z5N6KvKH3v4xSNiUuVfwGn7APJ1Xv6NmHuwcoIH6ez2rpqL2",
+            "role": "client"
+        },
+        {
+            "username": "chefuser",
+            "email": "chef@example.com",
+            "password": "$2b$12$c7aVsf95i/C/c9oBjmyAx.ax.YqVmv0AAXGapdtGf4Pz.2.9lZHjm",
+            "role": "chef"
+        },
+        {
+            "username": "livreur1",
+            "email": "livreur@example.com",
+            "password": "$2b$12$yls2lBdqM2fn/v/fYDTeves1IwLAQ43mtxukO0RSce9t4iM.nAZJe",
+            "role": "livreur"
+        }
+    ]
+}
