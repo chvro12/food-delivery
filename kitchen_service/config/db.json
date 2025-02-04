@@ -17,5 +17,17 @@
         ],
         "status": "PENDING",
         "created_at": "2025-02-02T21:23:52.856133"
+    },
+    {
+        "id": "13c85051-37f9-42e1-9a27-bf15dbba5340",
+        "created_at": "2025-02-04T17:46:45.410507",
+        "items": [
+            {
+                "name": "Pizza",
+                "quantity": 1,
+                "price": 15.0
+            }
+        ],
+        "status": "ready"
     }
 ]

@@ -2,12 +2,15 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 
+class OrderItem(BaseModel):
+    name: str
+    quantity: int
+    price: float
+
 class KitchenOrder(BaseModel):
-    order_id: str
-    status: str
+    items: List[OrderItem]
+    status: str = "pending"
     notes: Optional[str] = None
-    items: List[str]
-    created_at: datetime = None
 
 class StatusUpdate(BaseModel):
     status: str

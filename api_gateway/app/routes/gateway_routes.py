@@ -63,6 +63,19 @@ async def get_order(order_id: int, request: Request, user: dict = Depends(auth_m
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get("/order/orders")
+async def list_orders(request: Request, user: dict = Depends(auth_middleware)):
+    try:
+        headers = {
+            "Authorization": f"Bearer {request.state.token}",
+            "X-User-Email": request.state.user_email,
+            "X-User-Role": request.state.user_role
+        }
+        return await call_order_service("orders", headers=headers)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+        
+
 # Route pour mettre à jour une commande
 @router.put("/order/orders/{order_id}")
 async def update_order(
@@ -159,3 +172,5 @@ async def update_kitchen_status(
     except Exception as e:
         print(f"Error updating kitchen status: {str(e)}")  # Debug log
         raise HTTPException(status_code=500, detail=str(e))
+    
+  

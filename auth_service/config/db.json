@@ -35,6 +35,18 @@
             "email": "admin2@example.com",
             "password": "$2b$12$DPDrIDsLkqXFAMF6UYxgkO7PprTJBh21csi3OLIGDcJHWmLnhFnhC",
             "role": "admin"
+        },
+        {
+            "username": "driver1",
+            "email": "driver@example.com",
+            "password": "$2b$12$Dxcwn2joLFSXOqucaBTdv.x6lS.jIpIf.TZJ8t/utu7KHlwVKoVSK",
+            "role": "driver"
+        },
+        {
+            "username": "john",
+            "email": "john@example.com",
+            "password": "$2b$12$Xmck/iarBL8ObPFrxrhx..YGTCck1RKQwH9kPtyTUsO4GiSg9Oh2K",
+            "role": "client"
         }
     ]
 }
