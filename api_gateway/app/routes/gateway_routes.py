@@ -172,5 +172,42 @@ async def update_kitchen_status(
     except Exception as e:
         print(f"Error updating kitchen status: {str(e)}")  # Debug log
         raise HTTPException(status_code=500, detail=str(e))
-    
+@router.get("/delivery/orders")
+async def get_delivery_orders(request: Request, user: dict = Depends(auth_middleware)):
+    try:
+        headers = {
+            "Authorization": f"Bearer {request.state.token}",
+            "X-User-Email": request.state.user_email,
+            "X-User-Role": request.state.user_role
+        }
+        return await call_delivery_service(
+            endpoint="delivery/orders",
+            headers=headers
+        )
+    except Exception as e:
+        print(f"Error getting delivery orders: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/delivery/orders/{order_id}/status")
+async def update_delivery_status(
+    order_id: str,
+    status_data: dict,
+    request: Request,
+    user: dict = Depends(auth_middleware)
+):
+    try:
+        headers = {
+            "Authorization": f"Bearer {request.state.token}",
+            "X-User-Email": request.state.user_email,
+            "X-User-Role": request.state.user_role
+        }
+        return await call_delivery_service(
+            endpoint=f"delivery/orders/{order_id}/status",
+            method="PUT",
+            headers=headers,
+            data=status_data
+        )
+    except Exception as e:
+        print(f"Error updating delivery status: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
   
