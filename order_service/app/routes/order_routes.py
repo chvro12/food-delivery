@@ -1,31 +1,43 @@
-from fastapi import APIRouter, Depends, HTTPException
-from app.models.order_model import Order
-from app.services.order_service import create_order, get_orders, get_order_by_id, update_order_status
-from app.middlewares.auth_middleware import get_current_user, check_role
+from fastapi import APIRouter, Depends, HTTPException, Header
+from app.utils.jwt_utils import verify_token
 
-router = APIRouter(prefix="/orders", tags=["Orders"])  # ✅ Correction
+router = APIRouter(prefix="/orders", tags=["Orders"])
 
-@router.post("")
-async def place_order(order: Order, current_user: dict = Depends(get_current_user)):
-    """ Permet aux clients de passer une commande """
-    return create_order(order)
 
-@router.get("")
-async def list_orders(current_user: dict = Depends(get_current_user)):  
-    """ Liste toutes les commandes """
-    return get_orders()
+def get_token(authorization: str = Header(None)):
+    """ Extrait et valide le token JWT depuis l'en-tête Authorization """
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid token")
 
-@router.get("/{order_id}")  # ✅ Ajout du `/` avant `{order_id}`
-async def get_order(order_id: str, current_user: dict = Depends(get_current_user)):
-    """ Récupère une commande spécifique """
-    order = get_order_by_id(order_id)
-    
-    if current_user["role"] == "client" and order["user_email"] != current_user["email"]:
-        raise HTTPException(status_code=403, detail="Access denied. You can only view your own orders.")
-    
-    return order
+    return authorization.split("Bearer ")[1]  # Retourne uniquement le token
 
-@router.put("/{order_id}/status")  # ✅ Ajout du `/` pour éviter la redirection
-async def change_order_status(order_id: str, status: str, current_user: dict = Depends(get_current_user)):
-    """ Met à jour le statut d'une commande avec restrictions par rôle """
-    return update_order_status(order_id, status)
+
+@router.post("/")
+async def create_order(order_data: dict, token: str = Depends(get_token)):
+    """ Création d'une commande après validation du token """
+    print(f"🔍 [Order Service] Token reçu : {token}")  # Debug log
+
+    user = verify_token(token)
+    if user is None:
+        print("⛔ [Order Service] Token invalide !")  # Debug log
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    print(f"✅ [Order Service] Utilisateur validé : {user}")  # Debug log
+    return {"message": "Commande créée avec succès", "user": user, "order_data": order_data}
+
+
+@router.get("/")
+async def list_orders(token: str = Depends(get_token)):
+    """ Récupère la liste des commandes après validation du token """
+    print(
+        f"🔍 [Order Service] Vérification du token pour récupération des commandes : {token}")  # Debug log
+
+    user = verify_token(token)
+    if user is None:
+        # Debug log
+        print(
+            "⛔ [Order Service] Token invalide lors de la récupération des commandes !")
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    print(f"✅ [Order Service] Utilisateur validé : {user}")  # Debug log
+    return {"message": "Liste des commandes récupérée avec succès", "user": user}

@@ -1,11 +1,12 @@
 from fastapi import FastAPI
-from app.routes.auth_routes import router as auth_router
+from app.routes.auth_routes import router as auth_router  # ✅ Import du routeur
 
 app = FastAPI()
 
-# Enregistrer les routes
-app.include_router(auth_router, prefix="/auth")
+# ✅ Inclure les routes d'authentification
+app.include_router(auth_router)
+
 
 @app.get("/")
-def home():
-    return {"message": "Auth Service is running!"}
+def root():
+    return {"message": "API is running"}

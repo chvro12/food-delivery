@@ -23,6 +23,12 @@
             "email": "livreur@example.com",
             "password": "$2b$12$yls2lBdqM2fn/v/fYDTeves1IwLAQ43mtxukO0RSce9t4iM.nAZJe",
             "role": "livreur"
+        },
+        {
+            "username": "clientuser",
+            "email": "client@example.com",
+            "password": "$2b$12$I90RaJ2eVjE.ZTi6FqNEsuAUp8UgLtvMQwNUHJ2DuUUhMXWTDlpX2",
+            "role": "client"
         }
     ]
 }
