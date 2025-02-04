@@ -29,6 +29,12 @@
             "email": "client@example.com",
             "password": "$2b$12$I90RaJ2eVjE.ZTi6FqNEsuAUp8UgLtvMQwNUHJ2DuUUhMXWTDlpX2",
             "role": "client"
+        },
+        {
+            "username": "admin2",
+            "email": "admin2@example.com",
+            "password": "$2b$12$DPDrIDsLkqXFAMF6UYxgkO7PprTJBh21csi3OLIGDcJHWmLnhFnhC",
+            "role": "admin"
         }
     ]
 }

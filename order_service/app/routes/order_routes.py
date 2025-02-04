@@ -1,43 +1,145 @@
-from fastapi import APIRouter, Depends, HTTPException, Header
-from app.utils.jwt_utils import verify_token
+from fastapi import APIRouter, Header, HTTPException
+from pydantic import BaseModel
+from typing import List, Optional
+import logging
 
-router = APIRouter(prefix="/orders", tags=["Orders"])
+# Configuration du logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
+# Définition du routeur sans préfixe
+router = APIRouter()
 
-def get_token(authorization: str = Header(None)):
-    """ Extrait et valide le token JWT depuis l'en-tête Authorization """
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Missing or invalid token")
+# Modèle de données pour les commandes
+class OrderRequest(BaseModel):
+    items: List[str]
+    total: float
+    status: Optional[str] = "pending"
 
-    return authorization.split("Bearer ")[1]  # Retourne uniquement le token
+# Routes
+@router.get("/orders")
+async def get_orders(
+    authorization: str = Header(None),
+    x_user_email: str = Header(None, alias="X-User-Email"),
+    x_user_role: str = Header(None, alias="X-User-Role")
+):
+    """Liste des commandes"""
+    logger.info(f"Getting orders for user: {x_user_email}")
+    
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization header required")
 
+    orders = [
+        {"id": 1, "status": "pending", "items": ["Pizza"], "total": 15.00},
+        {"id": 2, "status": "completed", "items": ["Burger"], "total": 12.00}
+    ]
+    
+    return {
+        "status": "success",
+        "message": "Orders retrieved successfully",
+        "user_email": x_user_email,
+        "orders": orders
+    }
 
-@router.post("/")
-async def create_order(order_data: dict, token: str = Depends(get_token)):
-    """ Création d'une commande après validation du token """
-    print(f"🔍 [Order Service] Token reçu : {token}")  # Debug log
+@router.post("/orders")
+async def create_order(
+    order: OrderRequest,
+    authorization: str = Header(None),
+    x_user_email: str = Header(None, alias="X-User-Email"),
+    x_user_role: str = Header(None, alias="X-User-Role")
+):
+    """Création d'une commande"""
+    logger.info(f"Creating order: {order.dict()} for user: {x_user_email}")
+    
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization header required")
 
-    user = verify_token(token)
-    if user is None:
-        print("⛔ [Order Service] Token invalide !")  # Debug log
-        raise HTTPException(status_code=401, detail="Invalid token")
+    new_order = {
+        "id": 1,  # Dans un vrai service, cet ID serait généré
+        "items": order.items,
+        "total": order.total,
+        "status": order.status,
+        "user_email": x_user_email
+    }
+    
+    return {
+        "status": "success",
+        "message": "Order created successfully",
+        "order": new_order
+    }
 
-    print(f"✅ [Order Service] Utilisateur validé : {user}")  # Debug log
-    return {"message": "Commande créée avec succès", "user": user, "order_data": order_data}
+@router.get("/orders/{order_id}")
+async def get_order(
+    order_id: int,
+    authorization: str = Header(None),
+    x_user_email: str = Header(None, alias="X-User-Email"),
+    x_user_role: str = Header(None, alias="X-User-Role")
+):
+    """Récupération d'une commande spécifique"""
+    logger.info(f"Getting order {order_id} for user: {x_user_email}")
+    
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization header required")
 
+    order = {
+        "id": order_id,
+        "status": "pending",
+        "items": ["Pizza"],
+        "total": 15.00,
+        "user_email": x_user_email
+    }
+    
+    return {
+        "status": "success",
+        "message": "Order retrieved successfully",
+        "order": order
+    }
 
-@router.get("/")
-async def list_orders(token: str = Depends(get_token)):
-    """ Récupère la liste des commandes après validation du token """
-    print(
-        f"🔍 [Order Service] Vérification du token pour récupération des commandes : {token}")  # Debug log
+@router.put("/orders/{order_id}")
+async def update_order(
+    order_id: int,
+    order: OrderRequest,
+    authorization: str = Header(None),
+    x_user_email: str = Header(None, alias="X-User-Email"),
+    x_user_role: str = Header(None, alias="X-User-Role")
+):
+    """Mise à jour d'une commande"""
+    logger.info(f"Updating order {order_id} for user: {x_user_email}")
+    
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization header required")
 
-    user = verify_token(token)
-    if user is None:
-        # Debug log
-        print(
-            "⛔ [Order Service] Token invalide lors de la récupération des commandes !")
-        raise HTTPException(status_code=401, detail="Invalid token")
+    updated_order = {
+        "id": order_id,
+        "items": order.items,
+        "total": order.total,
+        "status": order.status,
+        "user_email": x_user_email
+    }
+    
+    return {
+        "status": "success",
+        "message": "Order updated successfully",
+        "order": updated_order
+    }
 
-    print(f"✅ [Order Service] Utilisateur validé : {user}")  # Debug log
-    return {"message": "Liste des commandes récupérée avec succès", "user": user}
+@router.delete("/orders/{order_id}")
+async def delete_order(
+    order_id: int,
+    authorization: str = Header(None),
+    x_user_email: str = Header(None, alias="X-User-Email"),
+    x_user_role: str = Header(None, alias="X-User-Role")
+):
+    """Suppression d'une commande (admin uniquement)"""
+    logger.info(f"Deleting order {order_id} for user: {x_user_email}")
+    
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization header required")
+    
+    if x_user_role != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can delete orders")
+        
+    return {
+        "status": "success",
+        "message": f"Order {order_id} deleted successfully"
+    }
